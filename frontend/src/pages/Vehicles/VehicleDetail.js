@@ -35,22 +35,20 @@ const VehicleDetail = () => {
 
   const getStatusBadge = (status) => {
     const variants = {
-      'Available': 'success',
-      'Rented': 'info',
-      'Reserved': 'warning',
-      'Under Maintenance': 'warning',
-      'Out of Service': 'danger'
+      'available': 'success',
+      'rented': 'info',
+      'reserved': 'warning',
+      'under_maintenance': 'warning'
     };
     return variants[status] || 'secondary';
   };
 
   const getConditionBadge = (condition) => {
     const variants = {
-      'Good': 'success',
-      'Fair': 'warning',
-      'Needs Inspection': 'warning',
-      'Under Repair': 'danger',
-      'Damaged': 'danger'
+      'good': 'success',
+      'damaged': 'danger',
+      'under_repair': 'danger',
+      'needs_inspection': 'warning'
     };
     return variants[condition] || 'secondary';
   };
@@ -107,7 +105,7 @@ const VehicleDetail = () => {
                   Status
                 </label>
                 <Badge variant={getStatusBadge(vehicle.status)}>
-                  {vehicle.status}
+                  {vehicle.status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                 </Badge>
               </div>
               <div>
@@ -115,7 +113,7 @@ const VehicleDetail = () => {
                   Condition
                 </label>
                 <Badge variant={getConditionBadge(vehicle.condition)}>
-                  {vehicle.condition}
+                  {vehicle.condition.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                 </Badge>
               </div>
               <div>
@@ -124,73 +122,16 @@ const VehicleDetail = () => {
                 </label>
                 <p className="text-sm text-gray-900">{vehicle.serialNumber}</p>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Location
-                </label>
-                <p className="text-sm text-gray-900">{vehicle.location?.depot || 'Not specified'}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Total Rental Hours
-                </label>
-                <p className="text-sm text-gray-900">{vehicle.totalRentalHours || 0} hours</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Specifications */}
-          {vehicle.specifications && (
-            <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Specifications</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {vehicle.specifications.enginePower && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Engine Power
-                    </label>
-                    <p className="text-sm text-gray-900">{vehicle.specifications.enginePower}</p>
-                  </div>
-                )}
-                {vehicle.specifications.operatingWeight && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Operating Weight
-                    </label>
-                    <p className="text-sm text-gray-900">{vehicle.specifications.operatingWeight}</p>
-                  </div>
-                )}
-                {vehicle.specifications.maxCapacity && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Max Capacity
-                    </label>
-                    <p className="text-sm text-gray-900">{vehicle.specifications.maxCapacity}</p>
-                  </div>
-                )}
-                {vehicle.specifications.fuelType && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Fuel Type
-                    </label>
-                    <p className="text-sm text-gray-900">{vehicle.specifications.fuelType}</p>
-                  </div>
-                )}
-              </div>
-              {vehicle.specifications.attachments && vehicle.specifications.attachments.length > 0 && (
-                <div className="mt-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Attachments
+              {vehicle.dailyRate && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Daily Rate
                   </label>
-                  <div className="flex flex-wrap gap-2">
-                    {vehicle.specifications.attachments.map((attachment, index) => (
-                      <Badge key={index} variant="secondary">{attachment}</Badge>
-                    ))}
-                  </div>
+                  <p className="text-sm font-medium text-gray-900">${vehicle.dailyRate}</p>
                 </div>
               )}
             </div>
-          )}
+          </div>
 
           {/* Rental History */}
           <div className="bg-white rounded-lg shadow p-6">
@@ -258,59 +199,20 @@ const VehicleDetail = () => {
               Pricing
             </h3>
             <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Daily Rate</span>
-                <span className="text-sm font-medium">${vehicle.dailyRate}</span>
-              </div>
-              {vehicle.weeklyRate && (
+              {vehicle.dailyRate && (
                 <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Weekly Rate</span>
-                  <span className="text-sm font-medium">${vehicle.weeklyRate}</span>
+                  <span className="text-sm text-gray-600">Daily Rate</span>
+                  <span className="text-sm font-medium">${vehicle.dailyRate}</span>
                 </div>
               )}
-              {vehicle.monthlyRate && (
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Monthly Rate</span>
-                  <span className="text-sm font-medium">${vehicle.monthlyRate}</span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Maintenance */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">
-              <Wrench className="inline h-5 w-5 mr-2" />
-              Maintenance
-            </h3>
-            <div className="space-y-3">
-              {vehicle.maintenanceSchedule?.lastMaintenance && (
-                <div>
-                  <span className="text-sm text-gray-600">Last Maintenance</span>
-                  <p className="text-sm font-medium">
-                    {format(new Date(vehicle.maintenanceSchedule.lastMaintenance), 'MMM d, yyyy')}
-                  </p>
-                </div>
-              )}
-              {vehicle.maintenanceSchedule?.nextMaintenance && (
-                <div>
-                  <span className="text-sm text-gray-600">Next Maintenance</span>
-                  <p className="text-sm font-medium">
-                    {format(new Date(vehicle.maintenanceSchedule.nextMaintenance), 'MMM d, yyyy')}
-                  </p>
-                </div>
-              )}
-              {vehicle.maintenanceSchedule?.maintenanceType && (
-                <div>
-                  <span className="text-sm text-gray-600">Type</span>
-                  <p className="text-sm font-medium">{vehicle.maintenanceSchedule.maintenanceType}</p>
-                </div>
+              {!vehicle.dailyRate && (
+                <p className="text-sm text-gray-500">No pricing information available</p>
               )}
             </div>
           </div>
 
           {/* Current Rental */}
-          {vehicle.currentRental && (
+          {vehicle.linkedRentalId && (
             <div className="bg-white rounded-lg shadow p-6">
               <h3 className="text-lg font-medium text-gray-900 mb-4">
                 <Calendar className="inline h-5 w-5 mr-2" />
@@ -319,7 +221,7 @@ const VehicleDetail = () => {
               <div className="space-y-3">
                 <div>
                   <span className="text-sm text-gray-600">Rental ID</span>
-                  <p className="text-sm font-medium">{vehicle.currentRental.rentalId}</p>
+                  <p className="text-sm font-medium">Active Rental</p>
                 </div>
                 {vehicle.expectedReturnDate && (
                   <div>

@@ -10,12 +10,12 @@ const vehicleSchema = new mongoose.Schema({
   vehicleId: {
     type: String,
     required: true,
-    unique: true
+    index: true
   },
   type: {
     type: String,
     required: true,
-    enum: ['Bulldozer', 'Excavator', 'Loader', 'Crane', 'Grader', 'Dump Truck', 'Forklift', 'Backhoe', 'Skid Steer', 'Other']
+    enum: ['Car', 'Truck', 'Van', 'SUV', 'Bulldozer', 'Excavator', 'Loader', 'Crane', 'Grader', 'Dump Truck', 'Forklift', 'Backhoe', 'Skid Steer', 'Other']
   },
   model: {
     type: String,
@@ -23,81 +23,38 @@ const vehicleSchema = new mongoose.Schema({
   },
   manufacturer: {
     type: String,
-    required: true
+    required: false
   },
   year: {
     type: Number,
-    required: true,
     min: 1990,
     max: new Date().getFullYear() + 1
   },
   serialNumber: {
     type: String,
-    required: true,
-    unique: true
-  },
-  specifications: {
-    enginePower: String,
-    operatingWeight: String,
-    maxCapacity: String,
-    fuelType: { type: String, enum: ['Diesel', 'Electric', 'Hybrid', 'Gasoline'] },
-    attachments: [String]
+    sparse: true
   },
   condition: {
     type: String,
-    enum: ['Good', 'Fair', 'Needs Inspection', 'Under Repair', 'Damaged'],
-    default: 'Good'
+    enum: ['good', 'damaged', 'under_repair', 'needs_inspection'],
+    default: 'good'
   },
   status: {
     type: String,
-    enum: ['Available', 'Rented', 'Reserved', 'Under Maintenance', 'Out of Service'],
-    default: 'Available'
+    enum: ['available', 'reserved', 'rented', 'under_maintenance'],
+    default: 'available'
   },
-  location: {
-    depot: String,
-    coordinates: {
-      latitude: Number,
-      longitude: Number
-    }
-  },
-  currentRental: {
+  linkedRentalId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Rental',
+    ref: 'RentalHistory',
     default: null
   },
   expectedReturnDate: Date,
-  maintenanceSchedule: {
-    lastMaintenance: Date,
-    nextMaintenance: Date,
-    maintenanceType: String,
-    notes: String
-  },
-  rentalHistory: [{
-    rentalId: { type: mongoose.Schema.Types.ObjectId, ref: 'Rental' },
-    customerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Customer' },
-    startDate: Date,
-    endDate: Date,
-    returnCondition: String,
-    totalHours: Number
-  }],
-  totalRentalHours: {
-    type: Number,
-    default: 0
-  },
-  acquisitionCost: Number,
   dailyRate: {
     type: Number,
-    required: true,
+    required: false,
     min: 0
   },
-  weeklyRate: Number,
-  monthlyRate: Number,
-  images: [String],
-  documents: [{
-    type: String,
-    url: String,
-    uploadDate: Date
-  }],
   isActive: {
     type: Boolean,
     default: true
@@ -110,6 +67,6 @@ const vehicleSchema = new mongoose.Schema({
 vehicleSchema.index({ dealerId: 1, status: 1 });
 vehicleSchema.index({ dealerId: 1, type: 1 });
 vehicleSchema.index({ dealerId: 1, condition: 1 });
-vehicleSchema.index({ dealerId: 1, vehicleId: 1 });
+vehicleSchema.index({ dealerId: 1, vehicleId: 1 }, { unique: true });
 
 module.exports = mongoose.model('Vehicle', vehicleSchema);

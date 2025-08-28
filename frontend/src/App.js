@@ -7,6 +7,8 @@ import Register from './pages/Auth/Register';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Customers from './pages/Customers/Customers';
 import CustomerDetail from './pages/Customers/CustomerDetail';
+import Vehicles from './pages/Vehicles/Vehicles';
+import VehicleDetail from './pages/Vehicles/VehicleDetail';
 import Machines from './pages/Machines/Machines';
 import MachineDetail from './pages/Machines/MachineDetail';
 import Rentals from './pages/Rentals/Rentals';
@@ -47,6 +49,8 @@ function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="customers" element={<Customers />} />
           <Route path="customers/:id" element={<CustomerDetail />} />
+          <Route path="vehicles" element={<Vehicles />} />
+          <Route path="vehicles/:id" element={<VehicleDetail />} />
           <Route path="machines" element={<Machines />} />
           <Route path="machines/:id" element={<MachineDetail />} />
           <Route path="rentals" element={<Rentals />} />

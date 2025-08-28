@@ -22,30 +22,28 @@ const Vehicles = () => {
   );
 
   const vehicleTypes = [
-    'Bulldozer', 'Excavator', 'Loader', 'Crane', 'Grader', 'Dump Truck', 'Forklift', 'Backhoe', 'Skid Steer', 'Other'
+    'Car', 'Truck', 'Van', 'SUV', 'Bulldozer', 'Excavator', 'Loader', 'Crane', 'Grader', 'Dump Truck', 'Forklift', 'Backhoe', 'Skid Steer', 'Other'
   ];
 
-  const vehicleStatuses = ['Available', 'Rented', 'Reserved', 'Under Maintenance', 'Out of Service'];
-  const vehicleConditions = ['Good', 'Fair', 'Needs Inspection', 'Under Repair', 'Damaged'];
+  const vehicleStatuses = ['available', 'rented', 'reserved', 'under_maintenance'];
+  const vehicleConditions = ['good', 'damaged', 'under_repair', 'needs_inspection'];
 
   const getStatusBadge = (status) => {
     const variants = {
-      'Available': 'success',
-      'Rented': 'info',
-      'Reserved': 'warning',
-      'Under Maintenance': 'warning',
-      'Out of Service': 'danger'
+      'available': 'success',
+      'rented': 'info',
+      'reserved': 'warning',
+      'under_maintenance': 'warning'
     };
     return variants[status] || 'secondary';
   };
 
   const getConditionBadge = (condition) => {
     const variants = {
-      'Good': 'success',
-      'Fair': 'warning',
-      'Needs Inspection': 'warning',
-      'Under Repair': 'danger',
-      'Damaged': 'danger'
+      'good': 'success',
+      'damaged': 'danger',
+      'under_repair': 'danger',
+      'needs_inspection': 'warning'
     };
     return variants[condition] || 'secondary';
   };
@@ -112,7 +110,9 @@ const Vehicles = () => {
             >
               <option value="">All Statuses</option>
               {vehicleStatuses.map(vehicleStatus => (
-                <option key={vehicleStatus} value={vehicleStatus}>{vehicleStatus}</option>
+                <option key={vehicleStatus} value={vehicleStatus}>
+                  {vehicleStatus.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                </option>
               ))}
             </select>
           </div>
@@ -124,7 +124,9 @@ const Vehicles = () => {
             >
               <option value="">All Conditions</option>
               {vehicleConditions.map(vehicleCondition => (
-                <option key={vehicleCondition} value={vehicleCondition}>{vehicleCondition}</option>
+                <option key={vehicleCondition} value={vehicleCondition}>
+                  {vehicleCondition.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                </option>
               ))}
             </select>
           </div>
@@ -172,26 +174,26 @@ const Vehicles = () => {
                       </td>
                       <td>
                         <Badge variant={getStatusBadge(vehicle.status)}>
-                          {vehicle.status}
+                          {vehicle.status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                         </Badge>
                       </td>
                       <td>
                         <Badge variant={getConditionBadge(vehicle.condition)}>
-                          {vehicle.condition}
+                          {vehicle.condition.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                         </Badge>
                       </td>
                       <td>
                         <span className="text-sm font-medium text-gray-900">
-                          ${vehicle.dailyRate}
+                          {vehicle.dailyRate ? `$${vehicle.dailyRate}` : 'N/A'}
                         </span>
                       </td>
                       <td>
-                        {vehicle.currentRental ? (
+                        {vehicle.linkedRentalId ? (
                           <Link
-                            to={`/rentals/${vehicle.currentRental._id}`}
+                            to={`/rentals/${vehicle.linkedRentalId._id}`}
                             className="text-blue-600 hover:text-blue-500 text-sm"
                           >
-                            {vehicle.currentRental.rentalId}
+                            View Rental
                           </Link>
                         ) : (
                           <span className="text-sm text-gray-500">-</span>
